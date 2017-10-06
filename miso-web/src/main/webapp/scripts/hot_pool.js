@@ -127,6 +127,25 @@ HotTarget.pool = {
       }));
     }
   },
+  {
+    name: "Avg. Insert Size",
+    action: function(pools) {
+      var poolIds = pools.map(Utils.array.getId).join(',');
+
+      jQuery.ajax({
+        url: "/miso/pool/bulk/avginsertsizes",
+        data: JSON.stringify({
+          "ids": poolIds
+        }),
+        contentType: "application/json; charset=utf8",
+        dataType: "json",
+        type: "POST"
+      }).success(
+        function (data) {
+          Utils.showOkDialog('Average Insert Sizes', data.fields);
+        });
+    }
+  },
 
   HotUtils.printAction('pool'), ].concat(HotUtils.makeQcActions("Pool")),
 

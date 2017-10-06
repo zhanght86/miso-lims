@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response.Status;
 
+import javafx.collections.transformation.SortedList;
+import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -277,6 +280,33 @@ public class PoolRestController extends RestController {
       throws IOException {
     return getPoolPickerWithFilters(20,
         PaginationFilter.platformType(PlatformType.valueOf(platform)));
+  }
+
+  @RequestMapping(value = "/bulk/avginsertsizes", method = RequestMethod.POST, headers = { "Content-type=application/json" })
+  @ResponseBody
+  public JSONObject calculateAverageInsertSizes(@RequestBody JSONObject json) throws IOException {
+    String idString = json.getString("ids");
+    String[] split = idString.split(",");
+    List<Long> ids = new ArrayList<>();
+    for (int i = 0; i < split.length; i++) {
+      ids.add(Long.parseLong(split[i]));
+    }
+    Collection<Pool> pools = new ArrayList<>();
+    pools = poolService.listByIdList(ids);
+    List<String> avgs = new ArrayList<>();
+    for (Pool p : pools) {
+      long sum = 0;
+      Set<PoolableElementView> pevs = p.getPoolableElementViews();
+      for (PoolableElementView pev : pevs) {
+        sum += pev.getLibraryDnaSize();
+      }
+      long avg = sum/pevs.size();
+      avgs.add(p.getAlias() + ": " + avg);
+    }
+
+    JSONObject response = new JSONObject();
+    response.put("fields", avgs);
+    return response;
   }
 
   private PoolPickerResponse getPoolPickerWithFilters(Integer limit, PaginationFilter... filters) throws IOException {
