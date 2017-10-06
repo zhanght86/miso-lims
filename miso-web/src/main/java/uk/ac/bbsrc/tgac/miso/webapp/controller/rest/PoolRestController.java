@@ -300,10 +300,14 @@ public class PoolRestController extends RestController {
       long sum = 0;
       Set<PoolableElementView> pevs = p.getPoolableElementViews();
       if (pevs.size() > 0) {
+        long numpevs = 0;
         for (PoolableElementView pev : pevs) {
-          sum += pev.getLibraryDnaSize();
+          if (pev != null && pev.getLibraryDnaSize() != null) {
+            sum += pev.getLibraryDnaSize();
+            numpevs++;
+          }
         }
-        long avg = sum / pevs.size();
+        long avg = sum / numpevs;
         avgs.add(p.getAlias() + ": " + avg);
       }
       else {
