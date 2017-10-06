@@ -283,7 +283,7 @@ public class PoolRestController extends RestController {
         PaginationFilter.platformType(PlatformType.valueOf(platform)));
   }
 
-  @RequestMapping(value = "/avginsertsizes", method = RequestMethod.POST, headers = { "Content-type=application/json" })
+  @RequestMapping(value = "avginsertsizes", method = RequestMethod.POST, produces = "application/json")
   @ResponseBody
   public JSONObject calculateAverageInsertSizes(@RequestBody JSONObject json) throws IOException {
     String idString = json.getString("ids");
