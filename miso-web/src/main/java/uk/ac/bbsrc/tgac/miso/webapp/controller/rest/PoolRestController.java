@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response.Status;
 
 import javafx.collections.transformation.SortedList;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -282,7 +283,7 @@ public class PoolRestController extends RestController {
         PaginationFilter.platformType(PlatformType.valueOf(platform)));
   }
 
-  @RequestMapping(value = "/bulk/avginsertsizes", method = RequestMethod.POST, headers = { "Content-type=application/json" })
+  @RequestMapping(value = "/avginsertsizes", method = RequestMethod.POST, headers = { "Content-type=application/json" })
   @ResponseBody
   public JSONObject calculateAverageInsertSizes(@RequestBody JSONObject json) throws IOException {
     String idString = json.getString("ids");
@@ -305,7 +306,7 @@ public class PoolRestController extends RestController {
     }
 
     JSONObject response = new JSONObject();
-    response.put("fields", avgs);
+    response.put("fields", JSONArray.fromObject(avgs));
     return response;
   }
 

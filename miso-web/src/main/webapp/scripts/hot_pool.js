@@ -133,7 +133,7 @@ HotTarget.pool = {
       var poolIds = pools.map(Utils.array.getId).join(',');
 
       jQuery.ajax({
-        url: "/miso/pool/bulk/avginsertsizes",
+        url: "/miso/pool/avginsertsizes",
         data: JSON.stringify({
           "ids": poolIds
         }),
