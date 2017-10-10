@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response.Status;
 
-import javafx.collections.transformation.SortedList;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
@@ -293,13 +292,12 @@ public class PoolRestController extends RestController {
     for (int i = 0; i < split.length; i++) {
       ids.add(Long.parseLong(split[i]));
     }
-    Collection<Pool> pools = new ArrayList<>();
-    pools = poolService.listByIdList(ids);
+    Collection<Pool> pools = poolService.listByIdList(ids);
     List<String> avgs = new ArrayList<>();
     for (Pool p : pools) {
       long sum = 0;
       Set<PoolableElementView> pevs = p.getPoolableElementViews();
-      if (pevs.size() > 0) {
+      if (!pevs.isEmpty()) {
         long numpevs = 0;
         for (PoolableElementView pev : pevs) {
           if (pev != null && pev.getLibraryDnaSize() != null) {
@@ -307,8 +305,13 @@ public class PoolRestController extends RestController {
             numpevs++;
           }
         }
-        long avg = sum / numpevs;
-        avgs.add(p.getAlias() + ": " + avg);
+        if (numpevs != 0) {
+          long avg = sum / numpevs;
+          avgs.add(p.getAlias() + ": " + avg);
+        }
+        else {
+          avgs.add(p.getAlias() + ": No insert sizes recorded");
+        }
       }
       else {
         avgs.add(p.getAlias() + ": No elements in pool");
